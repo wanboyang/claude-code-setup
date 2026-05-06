@@ -5,7 +5,7 @@
 ### macOS / Linux
 
 ```bash
-git clone https://github.com/<your-username>/claude-code-setup.git
+git clone https://github.com/wanboyang/claude-code-setup.git
 cd claude-code-setup
 bash setup.sh
 ```
@@ -13,10 +13,49 @@ bash setup.sh
 ### Windows
 
 ```powershell
-git clone https://github.com/<your-username>/claude-code-setup.git
+git clone https://github.com/wanboyang/claude-code-setup.git
 cd claude-code-setup
 powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
+
+## 配置 API 后端 (DeepSeek V4)
+
+本环境使用 DeepSeek V4 Pro 作为 Claude Code 的模型后端，通过 Anthropic 兼容 API 接入。在 [DeepSeek Platform](https://platform.deepseek.com/) 获取 API Key。
+
+### 临时生效 (当前终端)
+
+**macOS / Linux:**
+```bash
+export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
+export ANTHROPIC_AUTH_TOKEN=<你的 DeepSeek API Key>
+export ANTHROPIC_MODEL=deepseek-v4-pro[1m]
+export ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro[1m]
+export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro[1m]
+export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
+export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
+export CLAUDE_CODE_EFFORT_LEVEL=max
+```
+
+**Windows PowerShell:**
+```powershell
+$env:ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
+$env:ANTHROPIC_AUTH_TOKEN="<你的 DeepSeek API Key>"
+$env:ANTHROPIC_MODEL="deepseek-v4-pro[1m]"
+$env:ANTHROPIC_DEFAULT_OPUS_MODEL="deepseek-v4-pro[1m]"
+$env:ANTHROPIC_DEFAULT_SONNET_MODEL="deepseek-v4-pro[1m]"
+$env:ANTHROPIC_DEFAULT_HAIKU_MODEL="deepseek-v4-flash"
+$env:CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-flash"
+$env:CLAUDE_CODE_EFFORT_LEVEL="max"
+```
+
+### 永久生效 (推荐)
+
+将上述环境变量写入 shell 配置文件:
+
+**macOS / Linux:** 追加到 `~/.bashrc` 或 `~/.zshrc`
+**Windows:** 通过 `setx` 命令或系统环境变量设置
+
+> 如果使用 Anthropic 官方 API，只需设置 `ANTHROPIC_AUTH_TOKEN` 为你的 Anthropic API Key，无需修改 `ANTHROPIC_BASE_URL`。
 
 ## 安装内容
 

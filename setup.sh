@@ -11,7 +11,7 @@ echo "========================================"
 
 # ---- 1. 安装 Claude Code CLI ----
 echo ""
-echo "[1/6] 安装 Claude Code CLI..."
+echo "[1/7] 安装 Claude Code CLI..."
 if ! command -v claude &>/dev/null; then
   curl -fsSL https://claude.ai/install.sh | bash
   echo "  ✓ Claude Code 安装完成"
@@ -19,9 +19,49 @@ else
   echo "  ✓ Claude Code 已安装: $(claude --version 2>&1 | head -1)"
 fi
 
-# ---- 2. 检查前置依赖 ----
+# ---- 2. DeepSeek API 配置 ----
 echo ""
-echo "[2/6] 检查前置依赖..."
+echo "[2/7] 配置 API 后端 (DeepSeek V4)..."
+if [ -n "${DEEPSEEK_API_KEY:-}" ]; then
+  export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
+  export ANTHROPIC_AUTH_TOKEN="$DEEPSEEK_API_KEY"
+  export ANTHROPIC_MODEL=deepseek-v4-pro[1m]
+  export ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro[1m]
+  export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro[1m]
+  export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
+  export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
+  export CLAUDE_CODE_EFFORT_LEVEL=max
+  echo "  ✓ DeepSeek V4 已配置 (通过 DEEPSEEK_API_KEY 环境变量)"
+  echo ""
+  echo "  如需永久生效，请将以下内容追加到 ~/.bashrc 或 ~/.zshrc:"
+  echo "  export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic"
+  echo "  export ANTHROPIC_AUTH_TOKEN=<你的 DeepSeek API Key>"
+  echo "  export ANTHROPIC_MODEL=deepseek-v4-pro[1m]"
+  echo "  export ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro[1m]"
+  echo "  export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro[1m]"
+  echo "  export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash"
+  echo "  export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash"
+  echo "  export CLAUDE_CODE_EFFORT_LEVEL=max"
+else
+  echo "  ⚠ 未检测到 DEEPSEEK_API_KEY 环境变量"
+  echo "  请在 DeepSeek Platform (https://platform.deepseek.com/) 获取 API Key"
+  echo "  然后设置环境变量:"
+  echo ""
+  echo "  export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic"
+  echo "  export ANTHROPIC_AUTH_TOKEN=<你的 DeepSeek API Key>"
+  echo "  export ANTHROPIC_MODEL=deepseek-v4-pro[1m]"
+  echo "  export ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro[1m]"
+  echo "  export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro[1m]"
+  echo "  export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash"
+  echo "  export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash"
+  echo "  export CLAUDE_CODE_EFFORT_LEVEL=max"
+  echo ""
+  echo "  或重新运行: DEEPSEEK_API_KEY=sk-xxx bash setup.sh"
+fi
+
+# ---- 3. 检查前置依赖 ----
+echo ""
+echo "[3/7] 检查前置依赖..."
 
 # Node.js (chrome-devtools MCP, office-mcp 需要)
 if ! command -v node &>/dev/null; then
@@ -50,13 +90,13 @@ fi
 
 # ---- 3. 安装插件市场 ----
 echo ""
-echo "[3/6] 安装官方插件市场..."
+echo "[4/7] 安装官方插件市场..."
 claude plugins marketplace add anthropics/claude-plugins-official 2>/dev/null || true
 echo "  ✓ 官方插件市场已添加"
 
 # ---- 4. 安装独立 Skills (来自 GitHub) ----
 echo ""
-echo "[4/6] 安装独立 Skills..."
+echo "[5/7] 安装独立 Skills..."
 
 # academic-search (学术搜索引擎)
 claude plugins install ustc-ai4science/academic-search 2>/dev/null || \
@@ -98,7 +138,7 @@ echo "  ✓ 独立 Skills 安装完成"
 
 # ---- 5. 配置 MCP 服务器 ----
 echo ""
-echo "[5/6] 配置 MCP 服务器..."
+echo "[6/7] 配置 MCP 服务器..."
 
 # 5a. alphaXiv (学术论文检索)
 echo "  配置 alphaxiv..."
@@ -139,7 +179,7 @@ echo "  ✓ MCP 服务器配置完成"
 
 # ---- 6. 权限配置 ----
 echo ""
-echo "[6/6] 配置权限..."
+echo "[7/7] 配置权限..."
 # 常用 MCP 工具自动允许
 claude config add allow "mcp__alphaxiv__*" 2>/dev/null || true
 claude config add allow "mcp__zotero__*" 2>/dev/null || true
@@ -157,6 +197,8 @@ echo " 安装完成!"
 echo "========================================"
 echo ""
 echo "手动检查清单:"
+echo "  □ 在 DeepSeek Platform 获取 API Key: https://platform.deepseek.com/"
+echo "  □ 设置 DEEPSEEK_API_KEY 环境变量，或手动设置 ANTHROPIC_* 变量"
 echo "  □ 确保 Node.js >= 18 已安装"
 echo "  □ 确保 Python >= 3.9 已安装"
 echo "  □ 确保 uv/uvx 已安装并可用"

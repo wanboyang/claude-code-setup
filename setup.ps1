@@ -9,7 +9,7 @@ Write-Host " Claude Code 环境自动配置 (Windows)" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 # ---- 1. 安装 Claude Code CLI ----
-Write-Host "`n[1/6] 安装 Claude Code CLI..." -ForegroundColor Yellow
+Write-Host "`n[1/7] 安装 Claude Code CLI..." -ForegroundColor Yellow
 $claudePath = Get-Command claude -ErrorAction SilentlyContinue
 if (-not $claudePath) {
     Write-Host "  正在安装 Claude Code..."
@@ -19,8 +19,48 @@ if (-not $claudePath) {
     Write-Host "  ✓ Claude Code 已安装: $($claudePath.Source)" -ForegroundColor Green
 }
 
-# ---- 2. 检查前置依赖 ----
-Write-Host "`n[2/6] 检查前置依赖..." -ForegroundColor Yellow
+# ---- 2. DeepSeek API 配置 ----
+Write-Host "`n[2/7] 配置 API 后端 (DeepSeek V4)..." -ForegroundColor Yellow
+$apiKey = $env:DEEPSEEK_API_KEY
+if ($apiKey) {
+    $env:ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"
+    $env:ANTHROPIC_AUTH_TOKEN = $apiKey
+    $env:ANTHROPIC_MODEL = "deepseek-v4-pro[1m]"
+    $env:ANTHROPIC_DEFAULT_OPUS_MODEL = "deepseek-v4-pro[1m]"
+    $env:ANTHROPIC_DEFAULT_SONNET_MODEL = "deepseek-v4-pro[1m]"
+    $env:ANTHROPIC_DEFAULT_HAIKU_MODEL = "deepseek-v4-flash"
+    $env:CLAUDE_CODE_SUBAGENT_MODEL = "deepseek-v4-flash"
+    $env:CLAUDE_CODE_EFFORT_LEVEL = "max"
+    Write-Host "  ✓ DeepSeek V4 已配置 (通过 DEEPSEEK_API_KEY 环境变量)" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  如需永久生效，请运行以下命令 (管理员权限):"
+    Write-Host '  setx ANTHROPIC_BASE_URL "https://api.deepseek.com/anthropic"'
+    Write-Host '  setx ANTHROPIC_MODEL "deepseek-v4-pro[1m]"'
+    Write-Host '  setx ANTHROPIC_DEFAULT_OPUS_MODEL "deepseek-v4-pro[1m]"'
+    Write-Host '  setx ANTHROPIC_DEFAULT_SONNET_MODEL "deepseek-v4-pro[1m]"'
+    Write-Host '  setx ANTHROPIC_DEFAULT_HAIKU_MODEL "deepseek-v4-flash"'
+    Write-Host '  setx CLAUDE_CODE_SUBAGENT_MODEL "deepseek-v4-flash"'
+    Write-Host '  setx CLAUDE_CODE_EFFORT_LEVEL "max"'
+    Write-Host '  setx ANTHROPIC_AUTH_TOKEN "<你的 DeepSeek API Key>"'
+} else {
+    Write-Host "  ⚠ 未检测到 `$env:DEEPSEEK_API_KEY` 环境变量" -ForegroundColor DarkYellow
+    Write-Host "  请在 DeepSeek Platform (https://platform.deepseek.com/) 获取 API Key"
+    Write-Host "  然后设置环境变量:"
+    Write-Host ""
+    Write-Host '  `$env:ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"'
+    Write-Host '  `$env:ANTHROPIC_AUTH_TOKEN="<你的 DeepSeek API Key>"'
+    Write-Host '  `$env:ANTHROPIC_MODEL="deepseek-v4-pro[1m]"'
+    Write-Host '  `$env:ANTHROPIC_DEFAULT_OPUS_MODEL="deepseek-v4-pro[1m]"'
+    Write-Host '  `$env:ANTHROPIC_DEFAULT_SONNET_MODEL="deepseek-v4-pro[1m]"'
+    Write-Host '  `$env:ANTHROPIC_DEFAULT_HAIKU_MODEL="deepseek-v4-flash"'
+    Write-Host '  `$env:CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-flash"'
+    Write-Host '  `$env:CLAUDE_CODE_EFFORT_LEVEL="max"'
+    Write-Host ""
+    Write-Host "  或重新运行: `$env:DEEPSEEK_API_KEY='sk-xxx'; .\setup.ps1" -ForegroundColor DarkYellow
+}
+
+# ---- 3. 检查前置依赖 ----
+Write-Host "`n[3/7] 检查前置依赖..." -ForegroundColor Yellow
 
 # Node.js (chrome-devtools MCP, office-mcp)
 $nodePath = Get-Command node -ErrorAction SilentlyContinue
@@ -49,13 +89,13 @@ if (-not $uvxPath) {
     Write-Host "  ✓ uvx 可用" -ForegroundColor Green
 }
 
-# ---- 3. 安装插件市场 ----
-Write-Host "`n[3/6] 安装官方插件市场..." -ForegroundColor Yellow
+# ---- 4. 安装插件市场 ----
+Write-Host "`n[4/7] 安装官方插件市场..." -ForegroundColor Yellow
 claude plugins marketplace add anthropics/claude-plugins-official 2>$null
 Write-Host "  ✓ 官方插件市场已添加" -ForegroundColor Green
 
-# ---- 4. 安装独立 Skills ----
-Write-Host "`n[4/6] 安装独立 Skills..." -ForegroundColor Yellow
+# ---- 5. 安装独立 Skills ----
+Write-Host "`n[5/7] 安装独立 Skills..." -ForegroundColor Yellow
 
 $skills = @(
     "ustc-ai4science/academic-search",
@@ -81,8 +121,8 @@ foreach ($skill in $skills) {
 }
 Write-Host "  ✓ 独立 Skills 安装完成" -ForegroundColor Green
 
-# ---- 5. 配置 MCP 服务器 ----
-Write-Host "`n[5/6] 配置 MCP 服务器..." -ForegroundColor Yellow
+# ---- 6. 配置 MCP 服务器 ----
+Write-Host "`n[6/7] 配置 MCP 服务器..." -ForegroundColor Yellow
 
 # 5a. alphaXiv
 Write-Host "  配置 alphaxiv..."
@@ -119,8 +159,8 @@ if (-not (Test-Path $officeMcpDir)) {
 
 Write-Host "  ✓ MCP 服务器配置完成" -ForegroundColor Green
 
-# ---- 6. 权限配置 ----
-Write-Host "`n[6/6] 配置权限..." -ForegroundColor Yellow
+# ---- 7. 权限配置 ----
+Write-Host "`n[7/7] 配置权限..." -ForegroundColor Yellow
 
 $permissions = @(
     "mcp__alphaxiv__*",
@@ -145,6 +185,8 @@ Write-Host " 安装完成!" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "手动检查清单:"
+Write-Host "  □ 在 DeepSeek Platform 获取 API Key: https://platform.deepseek.com/"
+Write-Host "  □ 设置 DEEPSEEK_API_KEY 环境变量，或手动设置 ANTHROPIC_* 变量"
 Write-Host "  □ 确保 Node.js >= 18 已安装"
 Write-Host "  □ 确保 Python >= 3.9 + pip 已安装"
 Write-Host "  □ 确保 uv/uvx 已安装并可用 (重启终端后生效)"
