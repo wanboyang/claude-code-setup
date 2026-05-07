@@ -1,5 +1,7 @@
 # Claude Code 学术研究环境
 
+[**English**](README_EN.md) | **中文**
+
 一套面向学术研究场景的 Claude Code 环境配置，覆盖**论文搜索 → 批量下载 → 文献综述 → 论文撰写 → 润色发布**的完整研究流水线。
 
 ## 项目概览
@@ -47,6 +49,8 @@ academic-search ──→ paper-harvest ──→ literature-survey ──→ ml
 
 - **arXiv 路径**: 适合快速获取 AI/CS/ML 领域最新论文
 - **WoS 路径**: 适合需要引用数据 (JIF/JCR/SCI分区) 的正式学术场景
+
+> 📖 **实操教程**: [自动化科研教程：以蛋白质亚细胞定位为例](tutorial.md)
 
 ---
 
