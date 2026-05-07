@@ -82,10 +82,24 @@ else
 fi
 
 # Python (markitdown 需要)
-if ! command -v python3 &>/dev/null && ! command -v python &>/dev/null; then
+PYTHON_CMD=""
+if command -v python3 &>/dev/null; then
+  PYTHON_CMD="python3"
+elif command -v python &>/dev/null; then
+  PYTHON_CMD="python"
+fi
+
+if [ -z "$PYTHON_CMD" ]; then
   echo "  ⚠ Python 未安装，请手动安装: https://www.python.org/"
 else
-  echo "  ✓ Python 可用"
+  PYTHON_VERSION=$("$PYTHON_CMD" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")' 2>/dev/null || echo "0.0")
+  PYTHON_MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
+  PYTHON_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
+  if [ "$PYTHON_MAJOR" -ge 3 ] && [ "$PYTHON_MINOR" -ge 9 ] 2>/dev/null; then
+    echo "  ✓ Python $PYTHON_VERSION ($PYTHON_CMD)"
+  else
+    echo "  ⚠ Python $PYTHON_VERSION < 3.9，请升级: https://www.python.org/"
+  fi
 fi
 
 # ---- 3. 安装插件市场 ----
